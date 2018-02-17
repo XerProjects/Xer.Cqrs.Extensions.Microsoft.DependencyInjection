@@ -3,7 +3,7 @@ using Xer.Delegator;
 
 namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 {
-    public class CommandHandlerDelegateResolver : IMessageHandlerResolver
+    internal class CommandHandlerDelegateResolver : IMessageHandlerResolver
     {
         private readonly IMessageHandlerResolver _messageHandlerResolver;
 

@@ -2,35 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 using Xer.Cqrs.CommandStack;
 using Xer.Cqrs.CommandStack.Attributes;
 using Xer.Cqrs.CommandStack.Resolvers;
 using Xer.Cqrs.EventStack;
 using Xer.Cqrs.EventStack.Attributes;
 using Xer.Cqrs.EventStack.Resolvers;
-using Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Src;
-using Xer.Delegator;
 using Xer.Delegator.Registrations;
 using Xer.Delegator.Resolvers;
 
 namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 {
-    public class CqrsBuilder : ICqrsBuilder
+    internal class CqrsBuilder : ICqrsBuilder
     {
         private readonly IServiceCollection _serviceCollection;
-        private readonly IEnumerable<Assembly> _entryAndReferenceAssemblies;
 
-        internal CqrsBuilder(IServiceCollection serviceCollection, IEnumerable<Assembly> appDependencies)
+        internal CqrsBuilder(IServiceCollection serviceCollection)
         {
             _serviceCollection = serviceCollection;
-            _entryAndReferenceAssemblies = appDependencies;
-        }
-
-        public ICqrsBuilder AddCommandHandlers(ServiceLifetime lifetime = ServiceLifetime.Transient)
-        {
-            return AddCommandHandlers(_entryAndReferenceAssemblies, lifetime);
         }
 
         public ICqrsBuilder AddCommandHandlers(Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Transient)
@@ -56,11 +47,6 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             });
 
             return this;
-        }
-
-        public ICqrsBuilder AddCommandHandlersAttributes(ServiceLifetime lifetime = ServiceLifetime.Transient)
-        {
-            return AddCommandHandlersAttributes(_entryAndReferenceAssemblies, lifetime);
         }
 
         public ICqrsBuilder AddCommandHandlersAttributes(Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Transient)
@@ -113,10 +99,6 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 
             return this;
         }
-        public ICqrsBuilder AddEventHandlers(ServiceLifetime lifetime = ServiceLifetime.Transient)
-        {
-            return AddEventHandlers(_entryAndReferenceAssemblies, lifetime);
-        }
 
         public ICqrsBuilder AddEventHandlers(Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Transient)
         {
@@ -138,11 +120,6 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             });
 
             return this;
-        }
-
-        public ICqrsBuilder AddEventHandlersAttributes(ServiceLifetime lifetime = ServiceLifetime.Transient)
-        {
-            return AddEventHandlersAttributes(_entryAndReferenceAssemblies, lifetime);
         }
 
         public ICqrsBuilder AddEventHandlersAttributes(Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Transient)

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Src
+namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 {
     public class ServiceProviderAdapter : CommandStack.Resolvers.IContainerAdapter,
                                           EventStack.Resolvers.IContainerAdapter
