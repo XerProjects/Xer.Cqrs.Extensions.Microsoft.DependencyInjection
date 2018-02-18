@@ -4,6 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 {
+    /// <summary>
+    /// Represents an adapter to IServiceProvider. 
+    /// This will request an instance from the provider 
+    /// without throwing an exception if the requested type is not found.
+    /// </summary>
     public class ServiceProviderAdapter : CommandStack.Resolvers.IContainerAdapter,
                                           EventStack.Resolvers.IContainerAdapter
     {

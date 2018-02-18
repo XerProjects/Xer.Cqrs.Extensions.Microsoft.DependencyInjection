@@ -24,6 +24,28 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             _serviceCollection = serviceCollection;
         }
 
+        public ICqrsBuilder AddCommandDelegator()
+        {
+            _serviceCollection.AddSingleton<CommandDelegator>(serviceProvider => 
+            {
+                CommandHandlerDelegateResolver[] messageHandlerResolvers = serviceProvider.GetServices<CommandHandlerDelegateResolver>().ToArray();
+                
+                if (messageHandlerResolvers.Length > 1)
+                {
+                    return new CommandDelegator(CompositeMessageHandlerResolver.Compose(messageHandlerResolvers));
+                }
+                else if (messageHandlerResolvers.Length == 1)
+                {
+                    return new CommandDelegator(messageHandlerResolvers[0]);
+                }
+
+                // Empty delegator.
+                return new CommandDelegator(new SingleMessageHandlerRegistration().BuildMessageHandlerResolver());
+            });
+
+            return this;
+        }
+
         public ICqrsBuilder AddCommandHandlers(Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Transient)
         {
             return AddCommandHandlers(new[] { assembly }, lifetime);
@@ -59,23 +81,14 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             _serviceCollection.Scan(scan => scan
                 .FromAssemblies(assemblies)
                 // Register classes that has a method marked with [CommandHandler]
-                .AddClasses(classes => classes.Where(type => hasHandlerAttributeMethods<CommandHandlerAttribute>(type)))
+                .AddClasses(classes => classes.Where(type => CommandHandlerAttributeMethod.IsFoundInType(type)))
                 .AsSelf()
                 .WithLifetime(lifetime));
-
-            // Get all types that has methods marked with [CommandHandler] attribute.
-            Type[] allTypes = assemblies.SelectMany(assembly => assembly.GetTypes())
-                                                    .Where(type => hasHandlerAttributeMethods<CommandHandlerAttribute>(type))
-                                                    .ToArray();
             
             _serviceCollection.AddSingleton<CommandHandlerDelegateResolver>(serviceProvider => 
             {
                 var singleMessageHandlerRegistration = new SingleMessageHandlerRegistration();
-
-                foreach(Type type in allTypes)
-                {
-                    singleMessageHandlerRegistration.RegisterCommandHandlerAttributes(() => serviceProvider.GetRequiredService(type));
-                }
+                singleMessageHandlerRegistration.RegisterCommandHandlerAttributes(assemblies, serviceProvider.GetRequiredService);
 
                 return new CommandHandlerDelegateResolver(singleMessageHandlerRegistration.BuildMessageHandlerResolver());
             });
@@ -83,18 +96,23 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             return this;
         }
 
-        public ICqrsBuilder AddCommandDelegator()
+        public ICqrsBuilder AddEventDelegator()
         {
-            _serviceCollection.AddSingleton<CommandDelegator>(serviceProvider => 
+            _serviceCollection.AddSingleton<EventDelegator>(serviceProvider => 
             {
-                var messageHandlerResolvers = serviceProvider.GetServices<CommandHandlerDelegateResolver>().ToArray();
-
-                if(messageHandlerResolvers.Length == 1)
+                EventHandlerDelegateResolver[] messageHandlerResolvers = serviceProvider.GetServices<EventHandlerDelegateResolver>().ToArray();
+                
+                if (messageHandlerResolvers.Length > 1)
                 {
-                    return new CommandDelegator(messageHandlerResolvers[0]);
+                    return new EventDelegator(CompositeMessageHandlerResolver.Compose(messageHandlerResolvers));
+                }
+                else if (messageHandlerResolvers.Length == 1)
+                {
+                    return new EventDelegator(messageHandlerResolvers[0]);
                 }
 
-                return new CommandDelegator(CompositeMessageHandlerResolver.Compose(messageHandlerResolvers));
+                // Empty delegator.
+                return new EventDelegator(new MultiMessageHandlerRegistration().BuildMessageHandlerResolver());
             });
 
             return this;
@@ -132,50 +150,19 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             _serviceCollection.Scan(scan => scan
                 .FromAssemblies(assemblies)
                 // Register classes that has a method marked with [EventHandler]
-                .AddClasses(classes => classes.Where(type => hasHandlerAttributeMethods<EventHandlerAttribute>(type)))
+                .AddClasses(classes => classes.Where(type => EventHandlerAttributeMethod.IsFoundInType(type)))
                 .AsSelf()
                 .WithLifetime(lifetime));
-
-            // Get all types that has methods marked with [EventHandler] attribute.
-            Type[] allTypes = assemblies.SelectMany(assembly => assembly.GetTypes())
-                                                    .Where(type => hasHandlerAttributeMethods<EventHandlerAttribute>(type))
-                                                    .ToArray();
 
             _serviceCollection.AddSingleton<EventHandlerDelegateResolver>(serviceProvider => 
             {
                 var multiMessageHandlerRegistration = new MultiMessageHandlerRegistration();
-
-                foreach(Type type in allTypes)
-                {
-                    multiMessageHandlerRegistration.RegisterEventHandlerAttributes(() => serviceProvider.GetRequiredService(type));
-                }
-
+                multiMessageHandlerRegistration.RegisterEventHandlerAttributes(assemblies, serviceProvider.GetRequiredService);
+                
                 return new EventHandlerDelegateResolver(multiMessageHandlerRegistration.BuildMessageHandlerResolver());
             });
 
             return this;
-        }
-
-        public ICqrsBuilder AddEventDelegator()
-        {
-            _serviceCollection.AddSingleton<EventDelegator>(serviceProvider => 
-            {
-                var messageHandlerResolvers = serviceProvider.GetServices<EventHandlerDelegateResolver>().ToArray();
-
-                if(messageHandlerResolvers.Length == 1)
-                {
-                    return new EventDelegator(messageHandlerResolvers[0]);
-                }
-
-                return new EventDelegator(CompositeMessageHandlerResolver.Compose(messageHandlerResolvers));
-            });
-
-            return this;
-        }
-
-        private bool hasHandlerAttributeMethods<TAttribute>(Type type) where TAttribute : Attribute
-        {
-            return type.GetMethods().Any(method => method.GetCustomAttributes(typeof(TAttribute), true).Any());
         }
     }
 }
