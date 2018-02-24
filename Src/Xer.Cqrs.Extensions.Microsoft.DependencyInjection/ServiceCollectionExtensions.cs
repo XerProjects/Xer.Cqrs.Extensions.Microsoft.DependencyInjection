@@ -14,20 +14,19 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddCqrs(this IServiceCollection serviceCollection, IEnumerable<Assembly> assemblies)
         {
             AddCqrsCore(serviceCollection)
-                .AddCommandHandlers(assemblies)
-                .AddCommandHandlersAttributes(assemblies)
-                .AddEventHandlers(assemblies)
-                .AddEventHandlersAttributes(assemblies);
+                .AddCommandHandlers(select => 
+                    select.ByInterface(assemblies)
+                          .ByAttribute(assemblies))
+                .AddEventHandlers(select => 
+                    select.ByInterface(assemblies)
+                          .ByAttribute(assemblies));
 
             return serviceCollection;
         }
 
         public static ICqrsBuilder AddCqrsCore(this IServiceCollection serviceCollection)
         {
-            // Builder will search in entry and reference assemblies if no assembly is provided.
-            return new CqrsBuilder(serviceCollection)
-                .AddCommandDelegator()
-                .AddEventDelegator();
+            return new CqrsBuilder(serviceCollection);
         }
     }
 }

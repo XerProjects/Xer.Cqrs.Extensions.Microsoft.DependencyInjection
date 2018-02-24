@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xer.Cqrs.Extensions.Microsoft.DependencyInjection", "Src\Xer.Cqrs.Extensions.Microsoft.DependencyInjection.csproj", "{D25CF883-1A3A-45BD-8750-71A8BC2698FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xer.Cqrs.Extensions.Microsoft.DependencyInjection", "Src\Xer.Cqrs.Extensions.Microsoft.DependencyInjection\Xer.Cqrs.Extensions.Microsoft.DependencyInjection.csproj", "{D25CF883-1A3A-45BD-8750-71A8BC2698FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Tests", "Tests\Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Tests.csproj", "{0FE3186D-58CB-47E6-B1E1-0EDC50D3F606}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Tests", "Tests\Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Tests\Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Tests.csproj", "{0FE3186D-58CB-47E6-B1E1-0EDC50D3F606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

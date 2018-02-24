@@ -26,7 +26,7 @@ namespace Tests
             }
 
             [Fact]
-            public async Task ShouldRegisterAllCommandHandlersAndEventHandlersInAssembly()
+            public void ShouldRegisterAllCommandHandlersAndEventHandlersInAssembly()
             {
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddCqrs(_handlerAssembly);
@@ -35,8 +35,6 @@ namespace Tests
                 IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
                 var commandHandlerResolvers = serviceProvider.GetServices<CommandHandlerDelegateResolver>();
                 var eventHandlerResolvers = serviceProvider.GetServices<EventHandlerDelegateResolver>();
-                var commandDelegator = serviceProvider.GetRequiredService<CommandDelegator>();
-                var eventDelegator = serviceProvider.GetRequiredService<EventDelegator>();
 
                 // Two Resolvers:
                 // 1. Command handler resolver
@@ -48,80 +46,106 @@ namespace Tests
                 // 2. Event handler attribute resolver
                 eventHandlerResolvers.Should().HaveCount(2);
 
-                await commandDelegator.SendAsync(new TestCommand());
-                await eventDelegator.SendAsync(new TestEvent());
+                serviceProvider.GetService<CommandDelegator>().Should().NotBeNull();
+                serviceProvider.GetService<EventDelegator>().Should().NotBeNull();
+                serviceProvider.GetService<TestCommandHandler>().Should().NotBeNull();
+                serviceProvider.GetService<TestEventHandler>().Should().NotBeNull();
+                serviceProvider.GetService<ICommandAsyncHandler<TestCommand>>().Should().NotBeNull();
+                serviceProvider.GetService<ICommandHandler<TestCommand>>().Should().NotBeNull();
+                serviceProvider.GetService<IEventAsyncHandler<TestEvent>>().Should().NotBeNull();
+                serviceProvider.GetService<IEventHandler<TestEvent>>().Should().NotBeNull();
             }
 
             [Fact]
-            public async Task ShouldRegisterAllCommandHandlersInAssembly()
+            public void ShouldRegisterAllCommandHandlersInAssembly()
             {
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddCqrsCore()
-                                 .AddCommandHandlers(_handlerAssembly);
-
+                                 .AddCommandHandlers(select => select.ByInterface(_handlerAssembly));
                 serviceCollection.AddSingleton(_outputHelper);
 
                 IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
                 var commandHandlerResolvers = serviceProvider.GetServices<CommandHandlerDelegateResolver>();
-                var commandDelegator = serviceProvider.GetRequiredService<CommandDelegator>();
 
+                // One Resolver
+                // 1. Command handler resolver
                 commandHandlerResolvers.Should().HaveCount(1);
 
-                await commandDelegator.SendAsync(new TestCommand());
+                serviceProvider.GetService<CommandDelegator>().Should().NotBeNull();
+                serviceProvider.GetService<ICommandAsyncHandler<TestCommand>>().Should().NotBeNull();
+                serviceProvider.GetService<ICommandHandler<TestCommand>>().Should().NotBeNull();
+
+                // Null because attributes were not registered.
+                serviceProvider.GetService<TestCommandHandler>().Should().BeNull();
             }
 
             [Fact]
-            public async Task ShouldRegisterAllCommandHandlerAttributesInAssembly()
+            public void ShouldRegisterAllCommandHandlerAttributesInAssembly()
             {
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddCqrsCore()
-                                 .AddCommandHandlersAttributes(_handlerAssembly);
-
+                                 .AddCommandHandlers(select => select.ByAttribute(_handlerAssembly));
                 serviceCollection.AddSingleton(_outputHelper);
 
                 IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
                 var commandHandlerResolvers = serviceProvider.GetServices<CommandHandlerDelegateResolver>();
-                var commandDelegator = serviceProvider.GetRequiredService<CommandDelegator>();
 
+                // One Resolver
+                // 1. Command handler attribute resolver
                 commandHandlerResolvers.Should().HaveCount(1);
 
-                await commandDelegator.SendAsync(new TestCommand());
+                serviceProvider.GetService<CommandDelegator>().Should().NotBeNull();
+                serviceProvider.GetService<TestCommandHandler>().Should().NotBeNull();
+
+                // Null because interfaces were not registered.
+                serviceProvider.GetService<ICommandAsyncHandler<TestCommand>>().Should().BeNull();
+                serviceProvider.GetService<ICommandHandler<TestCommand>>().Should().BeNull();
             }
 
             [Fact]
-            public async Task ShouldRegisterAllEventHandlersInAssembly()
+            public void ShouldRegisterAllEventHandlersInAssembly()
             {
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddCqrsCore()
-                                 .AddEventHandlers(_handlerAssembly);
-
+                                 .AddEventHandlers(select => select.ByInterface(_handlerAssembly));
                 serviceCollection.AddSingleton(_outputHelper);
 
                 IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
                 var eventHandlerResolvers = serviceProvider.GetServices<EventHandlerDelegateResolver>();
-                var eventDelegator = serviceProvider.GetRequiredService<EventDelegator>();
 
+                // One Resolver
+                // 1. Event handler resolver
                 eventHandlerResolvers.Should().HaveCount(1);
 
-                await eventDelegator.SendAsync(new TestEvent());
+                serviceProvider.GetService<EventDelegator>().Should().NotBeNull();
+                serviceProvider.GetService<IEventAsyncHandler<TestEvent>>().Should().NotBeNull();
+                serviceProvider.GetService<IEventHandler<TestEvent>>().Should().NotBeNull();
+
+                // Null because attributes were not registered.
+                serviceProvider.GetService<TestEventHandler>().Should().BeNull();
             }
 
             [Fact]
-            public async Task ShouldRegisterAllEventHandlerAttributesInAssembly()
+            public void ShouldRegisterAllEventHandlerAttributesInAssembly()
             {
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddCqrsCore()
-                                 .AddEventHandlersAttributes(_handlerAssembly);
-
+                                 .AddEventHandlers(select => select.ByAttribute(_handlerAssembly));
                 serviceCollection.AddSingleton(_outputHelper);
 
                 IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
                 var eventHandlerResolvers = serviceProvider.GetServices<EventHandlerDelegateResolver>();
-                var eventDelegator = serviceProvider.GetRequiredService<EventDelegator>();
 
+                // One Resolver
+                // 1. Event handler attribute resolver
                 eventHandlerResolvers.Should().HaveCount(1);
 
-                await eventDelegator.SendAsync(new TestEvent());
+                serviceProvider.GetService<EventDelegator>().Should().NotBeNull();
+                serviceProvider.GetService<TestEventHandler>().Should().NotBeNull();
+
+                // Null because interfaces were not registered.
+                serviceProvider.GetService<IEventAsyncHandler<TestEvent>>().Should().BeNull();
+                serviceProvider.GetService<IEventHandler<TestEvent>>().Should().BeNull();
             }
         }
     }
