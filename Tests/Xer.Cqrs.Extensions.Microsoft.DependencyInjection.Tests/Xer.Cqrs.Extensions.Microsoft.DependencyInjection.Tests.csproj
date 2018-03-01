@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Src\Xer.Cqrs.Extensions.Microsoft.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\Src\Xer.Cqrs.Extensions.Microsoft.DependencyInjection\Xer.Cqrs.Extensions.Microsoft.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>
