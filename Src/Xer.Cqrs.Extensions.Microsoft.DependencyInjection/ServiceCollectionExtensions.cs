@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using Xer.Cqrs.Extensions.Microsoft.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection

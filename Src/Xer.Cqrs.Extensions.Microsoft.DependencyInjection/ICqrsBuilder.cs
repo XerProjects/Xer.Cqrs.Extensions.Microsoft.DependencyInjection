@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 {

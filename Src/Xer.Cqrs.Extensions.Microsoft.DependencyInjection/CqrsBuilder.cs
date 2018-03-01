@@ -1,15 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Xer.Cqrs.CommandStack;
-using Xer.Cqrs.CommandStack.Attributes;
-using Xer.Cqrs.CommandStack.Resolvers;
 using Xer.Cqrs.EventStack;
-using Xer.Cqrs.EventStack.Attributes;
-using Xer.Cqrs.EventStack.Resolvers;
 using Xer.Delegator.Registrations;
 using Xer.Delegator.Resolvers;
 
