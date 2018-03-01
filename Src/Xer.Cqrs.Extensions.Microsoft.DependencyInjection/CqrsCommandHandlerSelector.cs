@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Xer.Cqrs.CommandStack;
@@ -17,22 +17,12 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             _serviceCollection = serviceCollection;
         }
 
-        public ICqrsCommandHandlerSelector ByInterface(Assembly assembly)
+        public ICqrsCommandHandlerSelector ByInterface(params Assembly[] assemblies)
         {
-            return ByInterface(assembly, ServiceLifetime.Transient);
+            return ByInterface(ServiceLifetime.Transient, assemblies);
         }
 
-        public ICqrsCommandHandlerSelector ByInterface(Assembly assembly, ServiceLifetime lifetime)
-        {
-            return ByInterface(new[] { assembly }, lifetime);
-        }
-
-        public ICqrsCommandHandlerSelector ByInterface(IEnumerable<Assembly> assemblies)
-        {
-            return ByInterface(assemblies, ServiceLifetime.Transient);
-        }
-
-        public ICqrsCommandHandlerSelector ByInterface(IEnumerable<Assembly> assemblies, ServiceLifetime lifetime)
+        public ICqrsCommandHandlerSelector ByInterface(ServiceLifetime lifetime, params Assembly[] assemblies)
         {
             if (assemblies == null)
             {
@@ -40,7 +30,8 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             }
 
             _serviceCollection.Scan(scan => scan
-                .FromAssemblies(assemblies)
+                // Scan distinct assemblies.
+                .FromAssemblies(assemblies.Distinct())
                 // Register async and sync command handlers
                 .AddClasses(classes => classes.AssignableToAny(typeof(ICommandAsyncHandler<>), typeof(ICommandHandler<>)))
                 .AsImplementedInterfaces()
@@ -57,22 +48,12 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             return this;
         }
 
-        public ICqrsCommandHandlerSelector ByAttribute(Assembly assembly)
+        public ICqrsCommandHandlerSelector ByAttribute(params Assembly[] assemblies)
         {
-            return ByAttribute(assembly, ServiceLifetime.Transient);
+            return ByAttribute(ServiceLifetime.Transient, assemblies);
         }
 
-        public ICqrsCommandHandlerSelector ByAttribute(Assembly assembly, ServiceLifetime lifetime)
-        {
-            return ByAttribute(new[] { assembly }, lifetime);
-        }
-
-        public ICqrsCommandHandlerSelector ByAttribute(IEnumerable<Assembly> assemblies)
-        {
-            return ByAttribute(assemblies, ServiceLifetime.Transient);
-        }
-
-        public ICqrsCommandHandlerSelector ByAttribute(IEnumerable<Assembly> assemblies, ServiceLifetime lifetime)
+        public ICqrsCommandHandlerSelector ByAttribute(ServiceLifetime lifetime, params Assembly[] assemblies)
         {
             if (assemblies == null)
             {
@@ -80,7 +61,8 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             }
 
             _serviceCollection.Scan(scan => scan
-                .FromAssemblies(assemblies)
+                // Scan distinct assemblies.
+                .FromAssemblies(assemblies.Distinct())
                 // Register classes that has a method marked with [CommandHandler]
                 .AddClasses(classes => classes.Where(type => CommandHandlerAttributeMethod.IsFoundInType(type)))
                 .AsSelf()

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Xer.Cqrs.EventStack;
@@ -16,22 +16,12 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             _serviceCollection = serviceCollection;
         }
 
-        public ICqrsEventHandlerSelector ByInterface(Assembly assembly)
+        public ICqrsEventHandlerSelector ByInterface(params Assembly[] assemblies)
         {
-            return ByInterface(assembly, ServiceLifetime.Transient);
+            return ByInterface(ServiceLifetime.Transient, assemblies);
         }
 
-        public ICqrsEventHandlerSelector ByInterface(Assembly assembly, ServiceLifetime lifetime)
-        {
-            return ByInterface(new[] { assembly }, lifetime);
-        }
-
-        public ICqrsEventHandlerSelector ByInterface(IEnumerable<Assembly> assemblies)
-        {
-            return ByInterface(assemblies, ServiceLifetime.Transient);
-        }
-
-        public ICqrsEventHandlerSelector ByInterface(IEnumerable<Assembly> assemblies, ServiceLifetime lifetime)
+        public ICqrsEventHandlerSelector ByInterface(ServiceLifetime lifetime, params Assembly[] assemblies)
         {
             if (assemblies == null)
             {
@@ -39,7 +29,8 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             }
 
             _serviceCollection.Scan(scan => scan
-                .FromAssemblies(assemblies)
+                // Scan distinct assemblies.
+                .FromAssemblies(assemblies.Distinct())
                 // Register async and sync event handlers
                 .AddClasses(classes => classes.AssignableToAny(typeof(IEventAsyncHandler<>), typeof(IEventHandler<>)))
                 .AsImplementedInterfaces()
@@ -52,23 +43,13 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 
             return this;
         }
-        
-        public ICqrsEventHandlerSelector ByAttribute(Assembly assembly)
+
+        public ICqrsEventHandlerSelector ByAttribute(params Assembly[] assemblies)
         {
-            return ByAttribute(assembly, ServiceLifetime.Transient);
+            return ByAttribute(ServiceLifetime.Transient, assemblies);
         }
 
-        public ICqrsEventHandlerSelector ByAttribute(Assembly assembly, ServiceLifetime lifetime)
-        {
-            return ByAttribute(new[] { assembly }, lifetime);
-        }
-
-        public ICqrsEventHandlerSelector ByAttribute(IEnumerable<Assembly> assemblies)
-        {
-            return ByAttribute(assemblies, ServiceLifetime.Transient);
-        }
-
-        public ICqrsEventHandlerSelector ByAttribute(IEnumerable<Assembly> assemblies, ServiceLifetime lifetime)
+        public ICqrsEventHandlerSelector ByAttribute(ServiceLifetime lifetime, params Assembly[] assemblies)
         {
             if (assemblies == null)
             {
@@ -76,7 +57,8 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             }
 
             _serviceCollection.Scan(scan => scan
-                .FromAssemblies(assemblies)
+                // Scan distinct assemblies.
+                .FromAssemblies(assemblies.Distinct())
                 // Register classes that has a method marked with [EventHandler]
                 .AddClasses(classes => classes.Where(type => EventHandlerAttributeMethod.IsFoundInType(type)))
                 .AsSelf()

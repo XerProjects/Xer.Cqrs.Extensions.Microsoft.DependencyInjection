@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.Entities.CommandHandlers;
@@ -84,7 +82,7 @@ namespace Tests
             {
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddCqrsCore()
-                                 .AddCommandHandlers(select => select.ByAttribute(_handlerAssembly));
+                                 .AddCommandHandlers(select => select.ByAttribute(ServiceLifetime.Transient, _handlerAssembly));
                 serviceCollection.AddSingleton(_outputHelper);
 
                 IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
