@@ -3,8 +3,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Xer.Cqrs.CommandStack;
+using Xer.Cqrs.CommandStack.Extensions.Attributes;
 using Xer.Cqrs.CommandStack.Resolvers;
-using Xer.Delegator.Registrations;
+using Xer.Delegator.Registration;
 using Xer.Delegator.Resolvers;
 
 namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
@@ -82,7 +83,7 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             _serviceCollection.AddSingleton<CommandHandlerDelegateResolver>(serviceProvider => 
             {
                 var singleMessageHandlerRegistration = new SingleMessageHandlerRegistration();
-                singleMessageHandlerRegistration.RegisterCommandHandlerAttributes(assemblies, serviceProvider.GetRequiredService);
+                singleMessageHandlerRegistration.RegisterCommandHandlersByAttribute(assemblies, serviceProvider.GetRequiredService);
 
                 return new CommandHandlerDelegateResolver(singleMessageHandlerRegistration.BuildMessageHandlerResolver());
             });
