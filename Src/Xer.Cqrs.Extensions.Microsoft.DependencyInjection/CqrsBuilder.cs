@@ -6,6 +6,8 @@ using Xer.Cqrs.EventStack;
 using Xer.Delegator.Registrations;
 using Xer.Delegator.Resolvers;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Xer.Cqrs.Extensions.Microsoft.DependencyInjection.Tests")]
+
 namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 {
     internal class CqrsBuilder : ICqrsBuilder

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,12 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
         {
             if (assemblies == null)
             {
-                throw new System.ArgumentNullException(nameof(assemblies));
+                throw new ArgumentNullException(nameof(assemblies));
+            }
+
+            if (assemblies.Length == 0)
+            {
+                throw new ArgumentException("No assemblies were provided.", nameof(assemblies));
             }
 
             _serviceCollection.Scan(scan => scan
@@ -53,7 +59,12 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
         {
             if (assemblies == null)
             {
-                throw new System.ArgumentNullException(nameof(assemblies));
+                throw new ArgumentNullException(nameof(assemblies));
+            }
+
+            if (assemblies.Length == 0)
+            {
+                throw new ArgumentException("No assemblies were provided.", nameof(assemblies));
             }
 
             _serviceCollection.Scan(scan => scan
