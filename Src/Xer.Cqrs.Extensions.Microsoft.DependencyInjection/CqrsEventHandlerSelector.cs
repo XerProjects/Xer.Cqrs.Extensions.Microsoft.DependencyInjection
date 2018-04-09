@@ -3,8 +3,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Xer.Cqrs.EventStack;
+using Xer.Cqrs.EventStack.Extensions.Attributes;
 using Xer.Cqrs.EventStack.Resolvers;
-using Xer.Delegator.Registrations;
+using Xer.Delegator.Registration;
 
 namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 {
@@ -78,7 +79,7 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
             _serviceCollection.AddSingleton<EventHandlerDelegateResolver>(serviceProvider => 
             {
                 var multiMessageHandlerRegistration = new MultiMessageHandlerRegistration();
-                multiMessageHandlerRegistration.RegisterEventHandlerAttributes(assemblies, serviceProvider.GetRequiredService);
+                multiMessageHandlerRegistration.RegisterEventHandlersByAttribute(assemblies, serviceProvider.GetRequiredService);
                 
                 return new EventHandlerDelegateResolver(multiMessageHandlerRegistration.BuildMessageHandlerResolver());
             });
