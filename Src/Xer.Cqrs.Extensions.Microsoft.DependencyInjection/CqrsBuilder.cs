@@ -46,7 +46,7 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
                 }
                 
                 // Empty delegator.
-                return new CommandDelegator(new SingleMessageHandlerRegistration().BuildMessageHandlerResolver());
+                return new CommandDelegator(NullMessageHandlerDelegateResolver.Instance);
             });
 
             return this;
@@ -75,7 +75,7 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
                 }
 
                 // Empty delegator.
-                return new EventDelegator(new MultiMessageHandlerRegistration().BuildMessageHandlerResolver());
+                return new EventDelegator(NullMessageHandlerDelegateResolver.Instance);
             });
 
             return this;
