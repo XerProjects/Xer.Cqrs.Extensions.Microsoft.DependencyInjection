@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Xer.Cqrs.Extensions.Microsoft.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -7,6 +8,21 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddCqrs(this IServiceCollection serviceCollection, params Assembly[] assemblies)
         {
+            if (serviceCollection == null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
+
+            if (assemblies == null)
+            {
+                throw new ArgumentNullException(nameof(assemblies));
+            }
+
+            if (assemblies.Length == 0)
+            {
+                throw new ArgumentException("No assemblies were provided.", nameof(assemblies));
+            }
+
             AddCqrsCore(serviceCollection)
                 .AddCommandHandlers(select => 
                     select.ByInterface(assemblies)
