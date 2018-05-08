@@ -32,7 +32,7 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 
             if (assemblies.Length == 0)
             {
-                throw new ArgumentException("No assemblies were provided.", nameof(assemblies));
+                throw new ArgumentException("No event handler assemblies were provided.", nameof(assemblies));
             }
 
             _serviceCollection.Scan(scan => scan
@@ -65,7 +65,7 @@ namespace Xer.Cqrs.Extensions.Microsoft.DependencyInjection
 
             if (assemblies.Length == 0)
             {
-                throw new ArgumentException("No assemblies were provided.", nameof(assemblies));
+                throw new ArgumentException("No event handler assemblies were provided.", nameof(assemblies));
             }
 
             _serviceCollection.Scan(scan => scan
